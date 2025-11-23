@@ -48,13 +48,21 @@ Press "Switch 2" at any time to return back to normal LinnStrument operation.
 
 ## How to use Game of Life
 
+example: https://youtu.be/nWTdQqmKKIM and https://youtu.be/lptvRXBIVwg
+
 The left hand buttons control things.
     // 0,0 - Start / Stop
+
     // 0,1 - Short Press Clear Cells, Long Press Clear Beacons
+
     // 0,2 - Tempo Sync Mode, toggles between DAW SYNC variations or 100ms
+
     // 0,3 - Display Mode, toggles between B/W, Warm, Cool, Magenta
+
     // 0,4 - Change Extension App (Clip launcher etc)
+
     // 0,5 - Exit back to LinnStrument
+
     // 0,6 - Auto-Seed, toggles between ON/OFF and sets the number of ticks between reseeding
 
 When running, a button press on the grid will create cells, or kill them toggling their state.
