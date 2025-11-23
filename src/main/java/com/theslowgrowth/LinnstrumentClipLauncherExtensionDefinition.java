@@ -17,13 +17,13 @@ public class LinnstrumentClipLauncherExtensionDefinition extends ControllerExten
    @Override
    public String getName()
    {
-      return "LinnStrument ClipLauncher";
+      return "LinnStrument ClipLauncher - Jeff Edition";
    }
    
    @Override
    public String getAuthor()
    {
-      return "TheSlowGrowth";
+      return "Jeff Hopkins";
    }
 
    @Override
@@ -65,7 +65,7 @@ public class LinnstrumentClipLauncherExtensionDefinition extends ControllerExten
    @Override
    public int getNumMidiOutPorts()
    {
-      return 1;
+      return 2;
    }
 
    @Override
@@ -73,7 +73,7 @@ public class LinnstrumentClipLauncherExtensionDefinition extends ControllerExten
    {
       if (platformType == PlatformType.WINDOWS)
       {
-         list.add(new String[]{"LinnStrument MIDI"}, new String[]{"LinnStrument MIDI"});
+          list.add(new String[]{"LinnStrument MIDI"}, new String[]{"LinnStrument MIDI", "Linnstrument App"});
       }
       else if (platformType == PlatformType.MAC)
       {

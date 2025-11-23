@@ -87,6 +87,8 @@ public class ClipLauncherPage extends LinnstrumentPage {
     @Override
     protected void showImpl() {
         // Update indications in the app
+        getParent().getHost().showPopupNotification("LinnStrument Clip Launcher");
+
         for(int p=0; p<numTracksVisible_; p++)
         {
             Track track = trackBank_.getItemAt(p);
@@ -117,6 +119,13 @@ public class ClipLauncherPage extends LinnstrumentPage {
 
     @Override
     public void buttonDown(int x, int y, int velocity) {
+        if (x == 0 && y == 4) {
+            getParent().changePage(getParent().getQwertyPage());
+            return; // consume the press so it doesn't also trigger stop/record/etc.
+        }
+        if (x == 0 && y == 5) {
+            //getParent().changePage(null);
+        }
         // a cell on the menu column has been pressed
         if (x == 0)
         {

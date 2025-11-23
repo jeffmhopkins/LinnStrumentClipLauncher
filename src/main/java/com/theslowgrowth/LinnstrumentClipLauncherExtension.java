@@ -51,6 +51,7 @@ public class LinnstrumentClipLauncherExtension extends ControllerExtension {
         host_ = getHost();
         host_.getMidiInPort(0).setMidiCallback((ShortMidiMessageReceivedCallback) msg -> onMidi0(msg));
         midiOut_ = host_.getMidiOutPort(0);
+        midiOutQwerty_ = host_.getMidiOutPort(1);
         noteInput_ = host_.getMidiInPort(0).createNoteInput("");
         application_ = host_.createApplication();
 
@@ -93,7 +94,10 @@ public class LinnstrumentClipLauncherExtension extends ControllerExtension {
 
         boolean finish = finishOnChangeBack.get().equals("Yes");
         clipLauncher_ = new ClipLauncherPage(deviceWidth, 8, this, finish, defaultLowRowMode.get());
-
+        qwerty_ = new QwertyPage(deviceWidth, 8, this, clipLauncher_);
+        paintPage_ = new PaintPage(deviceWidth, 8, this);
+        flappyPage_ = new FlappyPage(deviceWidth, 8, this);
+        lifePage_ = new LifePage(deviceWidth, 8, this);
         changePage(null); // enter normal linnstrument mode
 
         // Add all observers
@@ -142,6 +146,7 @@ public class LinnstrumentClipLauncherExtension extends ControllerExtension {
     }
 
     void changePage(LinnstrumentPage page) {
+        //switch2PressCount_ = 0;
         if (page_ != null)
             page_.hide();
 
@@ -240,9 +245,6 @@ public class LinnstrumentClipLauncherExtension extends ControllerExtension {
         sendCC(13, 12); // set MIDI decimation rate for user firmware mode
     }
 
-    /**
-     * Called when we receive short MIDI message on port 0.
-     */
     private void onMidi0(ShortMidiMessage msg) {
         if (processIncomingNRPN(msg))
             return;
@@ -258,7 +260,22 @@ public class LinnstrumentClipLauncherExtension extends ControllerExtension {
                 int y = 7 - (msg.getStatusByte() & 0x0F); // coordinate transform: top-down
                 int x = msg.getData1();
                 int velo = msg.getData2();
-                // filter user2 button presses to change the mode back to normal
+                if (x == 0 && y == 4) {
+                    if (msg.isNoteOn() && switchEnabled_) {
+                        if (page_ == null || page_ == clipLauncher_) {
+                            changePage(lifePage_);
+                        } else if (page_ == lifePage_) {
+                            changePage(qwerty_);
+                        } else if (page_ == qwerty_) {
+                            changePage(paintPage_);
+                        } else if (page_ == paintPage_) {
+                            changePage(flappyPage_);
+                        } else if (page_ == flappyPage_) {
+                            changePage(clipLauncher_);
+                        }
+                    }
+                    return;
+                }
                 if ((x == 0) && (y == 5))
                 {
                     if (msg.isNoteOn() && switchEnabled_)
@@ -282,8 +299,46 @@ public class LinnstrumentClipLauncherExtension extends ControllerExtension {
         }
     }
 
+    public QwertyPage getQwertyPage() {
+        return qwerty_;
+    }
+
+    public PaintPage getPaintPage() {
+        return paintPage_;
+    }
+
+    public ClipLauncherPage getClipLauncherPage() {
+        return clipLauncher_;
+    }
+
+    public FlappyPage getFlappyPage() {
+        return flappyPage_;
+    }
+
+    public LifePage getLifePage() {
+        return lifePage_;
+    }
+
+    public MidiOut getQwertyOut() {
+        return midiOutQwerty_;
+    }
+
+    public MidiOut getMainMidiOut() {
+        return midiOut_;
+    }
+
     private void onMidiNRPN(int NRPN, int value) {
 
+    }
+
+    public void enablePerRowChannels() {
+        MidiOut out = getMainMidiOut();
+        // NRPN 23 = Per-Row Channel Mode
+        out.sendMidi(0xB0, 99, 0);    // NRPN MSB = 0
+        out.sendMidi(0xB0, 98, 23);   // NRPN LSB = 23
+        out.sendMidi(0xB0, 6,  0);    // Value MSB = 0
+        out.sendMidi(0xB0, 38, 1);    // Value LSB = 1  ← THIS LINE WAS MISSING!
+        getHost().requestFlush();
     }
 
     private Boolean processIncomingNRPN(ShortMidiMessage msg) {
@@ -342,7 +397,12 @@ public class LinnstrumentClipLauncherExtension extends ControllerExtension {
     private LEDBuffer buffer_;
     private ControllerHost host_ = getHost();
     private MidiOut midiOut_;
+    private MidiOut midiOutQwerty_;
     private ClipLauncherPage clipLauncher_;
+    private QwertyPage qwerty_;
+    private PaintPage paintPage_;
+    private FlappyPage flappyPage_;
+    private LifePage lifePage_;
     private int currentNRPN_ = 0;
     private int currentNRPNValue_ = 0;
     private int NRPNValueComplete_ = 0;
@@ -360,6 +420,10 @@ public class LinnstrumentClipLauncherExtension extends ControllerExtension {
     private static final int DEFUSERBUTTON2CC = 16;
     private static final Integer[] PASSTHROUGHTABLE;
     private static final Integer[] NOPASSTHROUGHTABLE;
+
+
+           // ← NEW
+
     static {
         PASSTHROUGHTABLE = new Integer[128];
         NOPASSTHROUGHTABLE = new Integer[128];

@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="linnstrument-cliplauncherjava:bwextension">
+    <output-path>$PROJECT_DIR$/classes/artifacts/linnstrument_cliplauncherjava_bwextension</output-path>
+    <root id="archive" name="linnstrument-cliplauncherjava_jeff.bwextension">
+      <element id="module-output" name="linnstrument-cliplauncherjava" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/bitwig/extension-api/6/extension-api-6.jar" path-in-jar="/" />
+      <element id="library" level="project" name="Maven: com.bitwig:extension-api:6" />
+    </root>
+  </artifact>
+</component>

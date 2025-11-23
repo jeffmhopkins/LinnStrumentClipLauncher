@@ -135,4 +135,8 @@ public class BlinkTimer {
     private List<BlinkTask> tasks_;
     private boolean active_;
     private double internalTimerPosition_;
+
+    public List<BlinkTask> getTasks() {
+        return tasks_;
+    }
 }
